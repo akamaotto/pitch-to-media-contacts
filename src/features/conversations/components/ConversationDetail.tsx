@@ -18,17 +18,25 @@ const ConversationDetail: React.FC = () => {
   const [replyError, setReplyError] = useState<string | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [detailLoading, setDetailLoading] = useState(true);
+  const seenIdsRef = React.useRef<Set<number>>(new Set());
   const { showSuccess, showError } = useToasts();
 
-  // Simulate detail loading
+  // Show shimmer only for first-time uncached selections; otherwise load instantly
   React.useEffect(() => {
-    if (selectedConversation) {
-      setDetailLoading(true);
-      const timer = setTimeout(() => {
-        setDetailLoading(false);
-      }, 500);
-      return () => clearTimeout(timer);
+    if (!selectedConversation) return;
+    const id = selectedConversation.id;
+    const hasCache = seenIdsRef.current.has(id) || (selectedConversation.messages?.length ?? 0) > 0;
+    if (hasCache) {
+      setDetailLoading(false);
+      seenIdsRef.current.add(id);
+      return;
     }
+    setDetailLoading(true);
+    const timer = setTimeout(() => {
+      setDetailLoading(false);
+      seenIdsRef.current.add(id);
+    }, 500);
+    return () => clearTimeout(timer);
   }, [selectedConversation]);
 
   if (!selectedConversation) {

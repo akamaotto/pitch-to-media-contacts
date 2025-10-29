@@ -192,6 +192,58 @@ export const usePitchesState = (preloadedData?: { pitches: Pitch[] }) => {
     []
   );
 
+  // Generate and immediately send
+  const generateAndSend = useCallback(
+    async (
+      selectedContacts: Set<number>,
+      mediaContacts: MediaContact[],
+      updateContactsAsPitched: (contactIds: number[]) => void,
+      addConversations: (conversations: any[]) => void,
+      notify?: (message: string) => void,
+      onComplete?: () => void,
+    ) => {
+      if (selectedContacts.size === 0) return;
+      const contacts = Array.from(selectedContacts)
+        .map(id => mediaContacts.find(c => c.id === id))
+        .filter(Boolean) as MediaContact[];
+
+      setGenerationProgress(0);
+      setGenerationCurrent(0);
+      setGenerationTotal(contacts.length);
+
+      // Simulate generation burst
+      const pitches: Pitch[] = contacts.map((contact, idx) => ({
+        id: contact.id,
+        contact,
+        subject: `Poblysh's AI cuts PR time by 70% for ${
+          contact.country === 'Nigeria' ? 'Nigerian startups' : 'emerging markets'
+        }`,
+        preview: `Hi ${contact.name.split(' ')[0]}, your focus on ${
+          contact.beats.split(',')[0].trim()
+        } is why I'm reaching out about our new AI platform...`,
+        body: `Hi ${contact.name.split(' ')[0]},\n\nI noticed your recent coverage of ${
+          contact.beats.split(',')[0].trim().toLowerCase()
+        } in ${contact.country} and thought you'd be interested in Poblysh's launch.\n\nPoblysh is an AI-powered PR platform that reduces the entire media workflow from weeks to minutes, directly addressing the pain point of decision paralysis in contact selection.\n\nKey highlights:\n• Reduces PR workflow from 15 days to 7 minutes\n• AI-generated pitches personalized to each journalist\n• **98% Match Score** because you cover ${contact.beats}\n\nWould you be interested in covering this story? The press release is attached.\n\nBest regards,\nPaul Otto\nFounder, Poblysh`,
+        status: 'ready',
+        edited: false,
+      }));
+
+      setGeneratedPitches(pitches);
+      setGenerationProgress(100);
+      setGenerationCurrent(contacts.length);
+      setGenerationMessage('Generated personalized messages. Sending...');
+
+      notify?.(`Generated ${contacts.length} messages. Sending now...`);
+
+      // Immediately send
+      sendPitches(pitches, updateContactsAsPitched, addConversations, () => {
+        setGenerationMessage(null);
+        onComplete?.();
+      });
+    },
+    [sendPitches]
+  );
+
   const toggleExpandedPitch = useCallback(
     (pitchId: number) => {
       setExpandedPitch(prev => (prev === pitchId ? null : pitchId));
@@ -215,6 +267,7 @@ export const usePitchesState = (preloadedData?: { pitches: Pitch[] }) => {
       generatePitches,
       generatePitchesSequential,
       sendPitches,
+      generateAndSend,
       toggleExpandedPitch,
     }),
     [
@@ -228,6 +281,7 @@ export const usePitchesState = (preloadedData?: { pitches: Pitch[] }) => {
       generatePitches,
       generatePitchesSequential,
       sendPitches,
+      generateAndSend,
       toggleExpandedPitch,
     ]
   );

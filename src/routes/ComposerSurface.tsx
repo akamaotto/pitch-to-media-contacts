@@ -18,6 +18,10 @@ export const ComposerSurface = ({ }: ComposerSurfaceProps) => {
     setActiveSurface(surface);
   };
 
+  React.useEffect(() => {
+    document.title = 'Pitch Composer · Poblysh';
+  }, []);
+
   return (
     <RouteErrorBoundary
       onError={(error, errorInfo) => {

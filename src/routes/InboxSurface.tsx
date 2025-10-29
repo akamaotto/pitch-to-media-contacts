@@ -19,6 +19,10 @@ export const InboxSurface = ({ }: InboxSurfaceProps) => {
     setActiveSurface(surface);
   };
 
+  React.useEffect(() => {
+    document.title = 'Inbox · Poblysh';
+  }, []);
+
   return (
     <RouteErrorBoundary
       onError={(error, errorInfo) => {

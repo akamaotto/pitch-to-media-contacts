@@ -19,6 +19,23 @@ export const ContactsSurface = ({ tab }: ContactsSurfaceProps) => {
     setActiveSurface(surface);
   };
 
+  React.useEffect(() => {
+    const titleForTab = (t?: ContactsSurfaceProps['tab']) => {
+      switch (t) {
+        case 'recommended':
+          return 'AI Recommended Contacts';
+        case 'myContacts':
+          return 'My Contacts';
+        case 'pitched':
+          return 'Pitched Contacts';
+        case 'all':
+        default:
+          return 'All Contacts';
+      }
+    };
+    document.title = `${titleForTab(tab)} · Poblysh`;
+  }, [tab]);
+
   return (
     <RouteErrorBoundary
       onError={(error, errorInfo) => {

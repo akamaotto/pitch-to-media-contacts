@@ -313,14 +313,7 @@ export const InboxPane = ({
                                 selectedConversation && 'block', // Show on mobile when a conversation is selected
                             )}
                         >
-                            {selectionLoading ? (
-                                <div className='flex flex-1 items-center justify-center'>
-                                    <LoadingSpinner
-                                        size='lg'
-                                        ariaLabel='Loading conversation...'
-                                    />
-                                </div>
-                            ) : selectedConversation ? (
+                            {selectedConversation ? (
                                 <>
                                     {/* Mobile back button */}
                                     <div className='flex items-center border-b border-border p-4 md:hidden'>
