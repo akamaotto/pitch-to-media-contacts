@@ -151,8 +151,8 @@ export const InboxConversationList = React.memo(
 
         return (
             <ErrorBoundary
-                onError={(error) => {
-                    console.error('InboxConversationList error:', error);
+                onError={() => {
+                    // Keep inbox list stable; surface-friendly error UI is handled within.
                 }}
             >
                 <div
@@ -161,27 +161,29 @@ export const InboxConversationList = React.memo(
                         className,
                     )}
                 >
+                    {/* Search / filter input with subtle premium chrome */}
                     <div className='relative text-sm'>
                         <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
                         <Input
                             type='search'
-                            placeholder='Filter threads...'
-                            className='pl-10 text-sm'
+                            placeholder='Search by journalist, subject, or reply...'
+                            className='pl-10 pr-9 text-xs sm:text-sm rounded-full bg-background/95 border-border/70 focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors'
                             value={searchQuery}
                             onChange={(e) => handleSearchChange(e.target.value)}
                             disabled={searchLoading}
+                            aria-label='Filter conversations'
                         />
                         {searchLoading && (
                             <LoadingSpinner
                                 size='sm'
-                                className='absolute right-3 top-1/2 -translate-y-1/2'
+                                className='absolute right-3 top-1/2 -translate-y-1/2 text-primary'
                                 ariaLabel='Searching...'
                             />
                         )}
                     </div>
 
                     <div
-                        className='flex flex-col'
+                        className='flex flex-col mt-1.5'
                         role='list'
                         aria-label='Conversations'
                     >
@@ -241,6 +243,7 @@ export const InboxConversationList = React.memo(
                                     : convo.unread
                                     ? 'unread'
                                     : 'default';
+
                                 return (
                                     <ListRow
                                         key={convo.id}
@@ -252,7 +255,13 @@ export const InboxConversationList = React.memo(
                                             onSelectConversation(convo)
                                         }
                                         variant={variant}
-                                        className='mb-2 text-sm last:mb-0 sm:mb-2'
+                                        className={cx(
+                                            'mb-1.5 text-sm last:mb-0 sm:mb-2',
+                                            isActive &&
+                                                'ring-1 ring-primary/40 ring-offset-0',
+                                            convo.unread &&
+                                                '!bg-primary/3 hover:!bg-primary/6 border-primary/20',
+                                        )}
                                         onKeyDown={(e) =>
                                             handleKeyDown(e, index)
                                         }
@@ -274,36 +283,51 @@ export const InboxConversationList = React.memo(
                                             <div className='min-w-0 flex-1'>
                                                 <p
                                                     className={cx(
-                                                        'font-semibold text-foreground text-sm sm:text-sm',
-                                                        convo.unread &&
-                                                            'text-foreground',
+                                                        'text-xs font-medium text-muted-foreground/80',
+                                                    )}
+                                                >
+                                                    {convo.contact.outlet}
+                                                </p>
+                                                <p
+                                                    className={cx(
+                                                        'mt-0.5 text-sm',
+                                                        convo.unread
+                                                            ? 'font-semibold text-foreground'
+                                                            : 'font-medium text-foreground',
                                                     )}
                                                 >
                                                     {convo.contact.name}
                                                 </p>
                                                 <p
                                                     className={cx(
-                                                        'mt-1 truncate text-xs text-muted-foreground',
+                                                        'mt-1 truncate text-[11px] text-muted-foreground',
+                                                        convo.unread &&
+                                                            'font-semibold text-foreground',
                                                         textClasses.previewClass,
                                                     )}
                                                 >
                                                     {convo.unread
-                                                        ? 'NEW REPLY: '
+                                                        ? 'New reply — '
                                                         : ''}
                                                     {convo.lastMessage}
                                                 </p>
                                             </div>
-                                            <span className='shrink-0 text-xs text-muted-foreground whitespace-nowrap'>
-                                                {convo.timestamp}
-                                            </span>
+                                            <div className='flex flex-col items-end gap-1'>
+                                                <span className='shrink-0 whitespace-nowrap text-[10px] text-muted-foreground'>
+                                                    {convo.timestamp}
+                                                </span>
+                                                {convo.unread && (
+                                                    <span className='inline-flex h-1.5 w-1.5 rounded-full bg-primary' />
+                                                )}
+                                            </div>
                                         </div>
-                                        <p className='mt-2 truncate text-sm font-medium text-foreground/90'>
+                                        <p className='mt-2 truncate text-[11px] font-medium text-foreground/90'>
                                             Re: {convo.subject}
                                         </p>
-                                        <div className='mt-3 flex justify-end'>
+                                        <div className='mt-2 flex justify-end'>
                                             <Badge
                                                 className={cx(
-                                                    'capitalize text-xs',
+                                                    'capitalize text-[9px] px-2 py-0.5 rounded-full',
                                                     getStatusClasses(
                                                         convo.status,
                                                     ),
@@ -312,7 +336,9 @@ export const InboxConversationList = React.memo(
                                                     convo.status,
                                                 )}`}
                                             >
-                                                {getStatusLabel(convo.status)}
+                                                {getStatusLabel(
+                                                    convo.status,
+                                                )}
                                             </Badge>
                                         </div>
                                     </ListRow>

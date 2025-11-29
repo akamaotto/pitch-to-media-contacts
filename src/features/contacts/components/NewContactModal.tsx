@@ -53,9 +53,12 @@ const NewContactModal: React.FC<NewContactModalProps> = ({
                 >
                     <X className='h-4 w-4' />
                 </button>
-                <h2 className='mb-4 text-xl font-semibold text-foreground'>
+                <h2 className='mb-1 text-xl font-semibold text-foreground'>
                     Add New Media Contact
                 </h2>
+                <p className='mb-4 text-xs text-muted-foreground'>
+                    Add a key contact that is not yet in your media list.
+                </p>
                 <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
                     <div className='space-y-3'>
                         <label className='block text-xs font-semibold uppercase tracking-wide text-muted-foreground'>

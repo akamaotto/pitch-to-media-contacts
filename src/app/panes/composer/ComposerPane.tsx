@@ -4,6 +4,7 @@ import { cx } from '../../../utils/cx';
 import { ComposerHeader } from './ComposerHeader';
 import { ComposerDraftList } from './ComposerDraftList';
 import { ComposerFooter } from './ComposerFooter';
+import { StepNarrative } from '../../../components/ui/StepNarrative';
 
 export type ComposerPaneProps = {
   className?: string;
@@ -23,7 +24,8 @@ export const ComposerPane = ({ className, onNavigate, preloadedData }: ComposerP
   };
 
   return (
-    <div className={cx('space-y-6', className)}>
+    <div className={cx('space-y-4', className)}>
+      <StepNarrative activeStep={2} />
       <ComposerHeader onBack={handleBackToContacts} />
       <ComposerDraftList pitches={generatedPitches} />
       <ComposerFooter sendingStatus={sendingStatus} />

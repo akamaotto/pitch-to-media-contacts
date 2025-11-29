@@ -13,7 +13,7 @@
             "args": [
                 "mcp-server-git",
                 "--repository",
-                "/Users/akamaotto/code/latazin"
+                "/Users/akamaotto/code/pitch-to-media-contacts"
             ]
         },
         "shadcn": {
